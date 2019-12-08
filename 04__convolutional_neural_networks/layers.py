@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+import numpy as np
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -31,3 +31,6 @@ def full_layer(input, size):
     W = weight_variable([in_size, size])
     b = bias_variable([size])
     return tf.matmul(input, W) + b
+
+
+

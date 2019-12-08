@@ -1,15 +1,47 @@
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 import numpy as np
-
 from layers import conv_layer, max_pool_2x2, full_layer
+import os
+import sys
+os.environ["TF_CPP_MIN_LOG_LEVEL"]='3' # 只显示 Error
 
-DATA_DIR = '/tmp/data'
+
+DATA_DIR = '../01_myTrail/MNIST_data'
 MINIBATCH_SIZE = 50
-STEPS = 5000
-
+STEPS = 100
 
 mnist = input_data.read_data_sets(DATA_DIR, one_hot=True)
+
+oneSampleLabel = mnist.train.labels[0,:]
+oneSampleData = mnist.train.images[0,:]
+print(type(oneSampleData))
+
+
+x = tf.placeholder(tf.float32,shape=[784])
+print(x)
+x_image = tf.reshape(x, [28,28])
+print(x_image)
+
+# init_op = tf.initialize_all_variables()
+# init_op = tf.global_variable_initializer()
+init_op = tf.global_variables_initializer()
+with tf.Session() as sess:
+    print("in the session")
+    sess.run(init_op)
+    result = sess.run(x_image,feed_dict={x:oneSampleData})
+    print(result)
+
+
+
+
+
+
+sys.exit(1)
+
+
+
+
 
 x = tf.placeholder(tf.float32, shape=[None, 784])
 y_ = tf.placeholder(tf.float32, shape=[None, 10])
@@ -40,16 +72,14 @@ with tf.Session() as sess:
     for i in range(STEPS):
         batch = mnist.train.next_batch(MINIBATCH_SIZE)
 
-        if i % 100 == 0:
-            train_accuracy = sess.run(accuracy, feed_dict={x: batch[0], y_: batch[1],
-                                                           keep_prob: 1.0})
+        if i % 10 == 0:
+            train_accuracy = sess.run(accuracy, feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
             print("step {}, training accuracy {}".format(i, train_accuracy))
 
-        sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+        #sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     X = mnist.test.images.reshape(10, 1000, 784)
     Y = mnist.test.labels.reshape(10, 1000, 10)
-    test_accuracy = np.mean(
-        [sess.run(accuracy, feed_dict={x: X[i], y_: Y[i], keep_prob: 1.0}) for i in range(10)])
+    test_accuracy = np.mean([sess.run(accuracy, feed_dict={x: X[i], y_: Y[i], keep_prob: 1.0}) for i in range(10)])
 
 print("test accuracy: {}".format(test_accuracy))
